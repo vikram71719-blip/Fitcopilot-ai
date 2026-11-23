@@ -1,7 +1,53 @@
 export default function Sidebar() {
   return (
-    <aside>
-      Sidebar
+    <aside
+      style={{
+        width: "240px",
+        background: "#111827",
+        color: "white",
+        padding: "20px",
+        minHeight: "100vh"
+      }}
+    >
+      <h2>FitCopilot</h2>
+
+      <hr />
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px"
+        }}
+      >
+        <a href="/dashboard" style={{ color: "white" }}>
+          Dashboard
+        </a>
+
+        <a href="/onboarding/personal-info" style={{ color: "white" }}>
+          Profile
+        </a>
+
+        <a href="/checkin" style={{ color: "white" }}>
+          Check-In
+        </a>
+
+        <a href="/nutrition" style={{ color: "white" }}>
+          Nutrition
+        </a>
+
+        <a href="/workouts" style={{ color: "white" }}>
+          Workouts
+        </a>
+
+        <a href="/coach" style={{ color: "white" }}>
+          AI Coach
+        </a>
+
+        <a href="/" style={{ color: "white" }}>
+          Home
+        </a>
+      </div>
     </aside>
-  )
+  );
 }

@@ -1,77 +1,248 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect,useState }
+from "react";
 
 export default function PersonalInfoPage() {
 
-  const [name, setName] = useState("");
-  const [age, setAge] = useState(25);
-  const [height, setHeight] = useState(180);
-  const [weight, setWeight] = useState(80);
+  const [profiles,setProfiles] =
+    useState<any[]>([]);
 
-  const [goal, setGoal] =
+  const [selectedId,setSelectedId] =
+    useState("");
+
+  const [name,setName] =
+    useState("");
+
+  const [age,setAge] =
+    useState(25);
+
+  const [height,setHeight] =
+    useState(180);
+
+  const [weight,setWeight] =
+    useState(80);
+
+  const [goal,setGoal] =
     useState("lose-fat");
 
-  const [activity, setActivity] =
+  const [activity,setActivity] =
     useState("moderate");
 
   useEffect(() => {
 
     const saved =
+      JSON.parse(
+        localStorage.getItem(
+          "fitcopilot-profiles"
+        ) || "[]"
+      );
+
+    setProfiles(saved);
+
+    const active =
       localStorage.getItem(
-        "fitcopilot-profile"
+        "fitcopilot-active-profile"
       );
 
-    if (saved) {
+    if(active){
 
-      const p =
-        JSON.parse(saved);
+      setSelectedId(active);
 
-      setName(p.name || "");
-      setAge(p.age || 25);
-      setHeight(p.height || 180);
-      setWeight(p.weight || 80);
-      setGoal(p.goal || "lose-fat");
-      setActivity(
-        p.activity || "moderate"
-      );
+      const profile =
+        saved.find(
+          (p:any)=>
+            p.id === active
+        );
+
+      if(profile){
+
+        loadProfile(profile);
+      }
     }
 
   }, []);
 
-  function saveProfile() {
+  function loadProfile(profile:any){
+
+    setName(profile.name);
+    setAge(profile.age);
+    setHeight(profile.height);
+    setWeight(profile.weight);
+    setGoal(profile.goal);
+    setActivity(
+      profile.activity
+    );
+  }
+
+  function saveProfile(){
+
+    const id =
+      selectedId ||
+      Date.now().toString();
+
+    const profile = {
+
+      id,
+
+      name,
+      age,
+      height,
+      weight,
+      goal,
+      activity
+
+    };
+
+    let updated =
+      [...profiles];
+
+    const index =
+      updated.findIndex(
+        p =>
+        p.id === id
+      );
+
+    if(index >= 0){
+
+      updated[index] =
+        profile;
+
+    }
+    else{
+
+      updated.push(
+        profile
+      );
+
+    }
 
     localStorage.setItem(
-      "fitcopilot-profile",
-      JSON.stringify({
-        name,
-        age,
-        height,
-        weight,
-        goal,
-        activity
-      })
+      "fitcopilot-profiles",
+      JSON.stringify(
+        updated
+      )
     );
 
-    alert("Profile Saved");
+    localStorage.setItem(
+      "fitcopilot-active-profile",
+      id
+    );
+
+    setProfiles(updated);
+
+    setSelectedId(id);
+
+    alert(
+      "Profile Saved"
+    );
+  }
+
+  function newProfile(){
+
+    setSelectedId("");
+
+    setName("");
+
+    setAge(25);
+
+    setHeight(180);
+
+    setWeight(80);
+
+    setGoal("lose-fat");
+
+    setActivity(
+      "moderate"
+    );
   }
 
   return (
+
     <main style={{
-      padding:"40px",
-      maxWidth:"600px"
+      padding:"40px"
     }}>
 
       <h1>
-        Profile Setup
+        Multi Profile Manager
       </h1>
+
+      <hr />
+
+      <h3>
+        Profiles
+      </h3>
+
+      <select
+
+        value={selectedId}
+
+        onChange={(e)=>{
+
+          const id =
+            e.target.value;
+
+          setSelectedId(id);
+
+          localStorage.setItem(
+            "fitcopilot-active-profile",
+            id
+          );
+
+          const profile =
+            profiles.find(
+              p =>
+              p.id === id
+            );
+
+          if(profile){
+
+            loadProfile(
+              profile
+            );
+          }
+
+        }}
+
+      >
+
+        <option value="">
+          Select Profile
+        </option>
+
+        {
+          profiles.map(
+            (p)=>(
+              <option
+                key={p.id}
+                value={p.id}
+              >
+                {p.name}
+              </option>
+            )
+          )
+        }
+
+      </select>
+
+      <button
+        onClick={
+          newProfile
+        }
+      >
+        New Profile
+      </button>
+
+      <hr />
 
       <p>Name</p>
 
       <input
         value={name}
         onChange={(e)=>
-          setName(e.target.value)
+          setName(
+            e.target.value
+          )
         }
       />
 
@@ -82,7 +253,9 @@ export default function PersonalInfoPage() {
         value={age}
         onChange={(e)=>
           setAge(
-            Number(e.target.value)
+            Number(
+              e.target.value
+            )
           )
         }
       />
@@ -94,7 +267,9 @@ export default function PersonalInfoPage() {
         value={height}
         onChange={(e)=>
           setHeight(
-            Number(e.target.value)
+            Number(
+              e.target.value
+            )
           )
         }
       />
@@ -106,69 +281,25 @@ export default function PersonalInfoPage() {
         value={weight}
         onChange={(e)=>
           setWeight(
-            Number(e.target.value)
+            Number(
+              e.target.value
+            )
           )
         }
       />
 
-      <p>Goal</p>
-
-      <select
-        value={goal}
-        onChange={(e)=>
-          setGoal(
-            e.target.value
-          )
-        }
-      >
-        <option value="lose-fat">
-          Lose Fat
-        </option>
-
-        <option value="maintain">
-          Maintain
-        </option>
-
-        <option value="gain-muscle">
-          Gain Muscle
-        </option>
-      </select>
-
-      <p>Activity Level</p>
-
-      <select
-        value={activity}
-        onChange={(e)=>
-          setActivity(
-            e.target.value
-          )
-        }
-      >
-        <option value="sedentary">
-          Sedentary
-        </option>
-
-        <option value="light">
-          Light
-        </option>
-
-        <option value="moderate">
-          Moderate
-        </option>
-
-        <option value="active">
-          Active
-        </option>
-      </select>
-
-      <br /><br />
+      <br />
+      <br />
 
       <button
-        onClick={saveProfile}
+        onClick={
+          saveProfile
+        }
       >
         Save Profile
       </button>
 
     </main>
+
   );
 }

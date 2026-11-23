@@ -1,0 +1,44 @@
+# ==========================================
+# FIX MISSING GLOBALS.CSS
+# ==========================================
+
+$css = @'
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f3f4f6;
+  font-family: Arial, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+'@
+
+Set-Content `
+app/globals.css `
+$css
+
+Write-Host ""
+Write-Host "✅ globals.css created"
+Write-Host ""
+Write-Host "Now run:"
+Write-Host "npm run build"
+Write-Host ""
